@@ -168,14 +168,4 @@ The accompanying report includes:
 
 ---
 
-## Contact
-
-For questions or issues, please contact:
-
-**Your Name**  
-Email: your.email@example.com  
-GitHub: https://github.com/yourusername
-
----
-
 *This README provides the complete guide for building, running, and deploying the Mobile Phones Management RESTful service using Spring Boot, Docker, Docker Compose, and Kubernetes.* 
