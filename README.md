@@ -1,5 +1,5 @@
 
-## This repository contains the deliverables for a university course Cloud Computing University course (2024–2025), divided into two main parts:
+## This repository contains the deliverables for a university course Cloud Computing (2024–2025), divided into two main parts:
 
 1. Theoretical Assignment  
 A PDF presentation analyzing and evaluating a scientific journal article related to cloud computing technologies. This analysis focuses on the concepts, methodology, and impact of the selected research paper.
