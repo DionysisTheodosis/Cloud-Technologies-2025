@@ -1,0 +1,6 @@
+#Spring configuration file
+spring:
+  application:
+    name: mobilemanagement
+  profiles:
+    active: ${PROFILE:dev}
