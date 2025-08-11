@@ -1,0 +1,15 @@
+#Spring configuration for development
+spring:
+  datasource:
+    url: jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT:3306}/${MYSQL_DATABASE:mobilemanagement}
+    username: ${MYSQL_USER:mobilemanagement}
+    password: ${MYSQL_PASSWORD:Mob1l3m4nagem3nt_!}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+    show-sql: true
+    open-in-view: true
