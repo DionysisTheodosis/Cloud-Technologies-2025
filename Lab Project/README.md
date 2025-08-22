@@ -66,20 +66,7 @@ The project covers the following main tasks:
 
 ### Environment File
 
-* Create a `.env` file in the project root (copy from `.env.example`) with at least:
-
-```bash
-MYSQL_CONTAINER_NAME="sample"
-MYSQL_VOLUME_NAME="sample"
-MYSQL_IMAGE="mysql:latest"
-NETWORK_NAME="sample"
-APP_IMAGE_NAME="sample"
-APP_CONTAINER_NAME="sample"
-APP_PORT=8080
-PROFILE="sample"
-GCP_PROJECT_ID="your-gcp-project-id"
-GOOGLE_APPLICATION_CREDENTIALS="./secrets/your-service-account.json"
-```
+* Create a `.env` file in the project root (copy from `.env.example`)
 
 > `.env` is **never committed** to GitHub. Only `.env.example` is shared as a template.
 
@@ -90,23 +77,16 @@ GOOGLE_APPLICATION_CREDENTIALS="./secrets/your-service-account.json"
 Sometimes you only want **MySQL running** to test backend from an IDE or editor:
 
 ```bash
-# Load environment variables
-source scripts/env.sh
-
 # Initialize MySQL container using Google Secret Manager
 ./database/setup-mysql.sh
 ```
-
+* Load environment variables
 * Creates MySQL container with a persistent volume
 * Fetches DB credentials from GSM
 * Initializes database and app user
 * Waits for MySQL to be ready
 
-> If the volume exists, it **reuses existing data**. To reinitialize MySQL from scratch:
-
-```bash
-FORCE_INIT=1 ./database/setup-mysql.sh
-```
+> If the volume exists, it **reuses existing data**. Otherwise it creates the volume
 
 ---
 

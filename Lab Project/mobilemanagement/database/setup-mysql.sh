@@ -9,6 +9,15 @@ source "$SCRIPT_DIR/../scripts/env.sh"
 source "$SCRIPT_DIR/../scripts/gsm-utils.sh"
 
 
+if ! docker volume ls --format '{{.Name}}' | grep -q "^$MYSQL_VOLUME_NAME$"; then
+    echo "Creating MySQL volume '$MYSQL_VOLUME_NAME'..."
+    docker volume create "$MYSQL_VOLUME_NAME"
+fi
+
+if ! docker network ls --format '{{.Name}}' | grep -q "^$NETWORK_NAME$"; then
+    echo "Creating Docker network '$NETWORK_NAME'..."
+    docker network create "$NETWORK_NAME"
+fi
 # Fetch secrets
 ACCESS_TOKEN=$(get_access_token)
 APP_DB=$(get_secret MYSQL_DATABASE "$ACCESS_TOKEN")
@@ -29,14 +38,13 @@ docker run -d \
   --restart unless-stopped \
   "$MYSQL_IMAGE"
 
-echo "Waiting for MySQL to be ready..."
-# Loop until MySQL accepts connections with temporary password
-until docker exec "$MYSQL_CONTAINER_NAME" mysqladmin ping -uroot -ptoor --silent; do
+echo "Waiting for MySQL to be ready with the correct root password..."
+until docker exec "$MYSQL_CONTAINER_NAME" \
+  mysql -u root -ptoor -e "SELECT 1;" >/dev/null 2>&1; do
     echo -n "."
     sleep 2
 done
-
-echo " MySQL is up!"
+echo " MySQL is ready!"
 
 
 # Apply real root password and create app user/db
@@ -53,4 +61,4 @@ FLUSH PRIVILEGES;
 SQL
 
 
-echo "✅ MySQL setup complete. App user '${APP_USER}' created on DB '${APP_DB}'."
+echo "MySQL setup complete. App user created on DB."

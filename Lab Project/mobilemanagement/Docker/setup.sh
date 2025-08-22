@@ -7,10 +7,14 @@ DOCKERFILE_PATH="$(dirname "$0")/../Docker/Dockerfile"
 # Build Docker image from Dockerfile
 docker build -f "$DOCKERFILE_PATH" -t "$APP_IMAGE_NAME" .
 
-# Create volume for MySQL if not already existing
-docker volume create "$MYSQL_VOLUME_NAME" || true
+if ! docker volume ls --format '{{.Name}}' | grep -q "^$MYSQL_VOLUME_NAME$"; then
+    echo "Creating MySQL volume '$MYSQL_VOLUME_NAME'..."
+    docker volume create "$MYSQL_VOLUME_NAME"
+fi
 
-# Create network for MySQL and APP if not already existing
-docker network create "$NETWORK_NAME" || true
+if ! docker network ls --format '{{.Name}}' | grep -q "^$NETWORK_NAME$"; then
+    echo "Creating Docker network '$NETWORK_NAME'..."
+    docker network create "$NETWORK_NAME"
+fi
 
 echo "Docker image built and volume/network created."
