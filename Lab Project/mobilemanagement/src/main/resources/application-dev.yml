@@ -1,9 +1,15 @@
 #Spring configuration for development
 spring:
+  config:
+    import: "sm://"
+  cloud:
+    gcp:
+      secretmanager:
+        enabled: true
   datasource:
-    url: jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/${MYSQL_DATABASE}
-    username: ${MYSQL_USER}
-    password: ${MYSQL_PASSWORD}
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${sm@projects/356074917522/secrets/MYSQL_DATABASE/versions/latest:mysql-test}
+    username: ${sm@projects/356074917522/secrets/MYSQL_USER/versions/latest:root}
+    password: ${sm@projects/356074917522/secrets/MYSQL_PASSWORD/versions/latest:password}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:

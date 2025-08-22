@@ -1,0 +1,9 @@
+.idea
+.mvn
+target/
+.dockerignore
+.gitattributes
+.gitignore
+Kubernetes/
+secrets/
+*.sh
