@@ -1,201 +1,246 @@
-# Mobile Phones Management RESTful Service
+# 📱 Mobile Phones Management RESTful Service
 
-## Overview
+## 📖 Overview
 
-This project implements a RESTful backend service for managing mobile phones in an online store. It is built with **Spring Boot** using **Spring Data REST** to expose repository-based REST endpoints and includes integration with a database via **JPA/Hibernate**.
+This project implements a **RESTful backend service** for managing mobile phones in an online store.  
+It is built with **Spring Boot** and **Spring Data REST**, exposing repository-based REST endpoints with integrated validation and persistence via **JPA/Hibernate**.
 
-The project covers the following main tasks:
+The project includes:
 
-1. Implementing the RESTful service with validation and CRUD operations.
-2. Dockerizing the backend service and database.
-3. Using Google Secret Manager to securely store database credentials.
-4. Modeling the backend with Docker Compose.
-5. Modeling the backend with Kubernetes manifests deployable via Minikube.
-6. Writing a report describing the implementation details and experience.
-
----
-
-## Project Features
-
-* **Mobile Phone Entity** with the following validated fields (all mandatory):
-
-  * Serial Number (exactly 11 alphanumeric characters, unique)
-  * IMEI Number (exactly 15 digits, unique)
-  * Model (alphanumeric, min 2 chars)
-  * Brand (letters only, min 2 chars)
-  * Network Technology (one or more from \[GSM, HSPA, LTE, 3G, 4G, 5G])
-  * Number of Cameras (integer between 1 and 3)
-  * Number of CPU Cores (integer ≥ 1)
-  * Weight (grams, positive integer)
-  * Battery Capacity (mAh, positive integer)
-  * Cost (€ positive decimal)
-
-* **REST Endpoints** (via Spring Data REST & custom validation):
-
-  * Create mobile phone (enforces uniqueness of Serial Number and IMEI)
-  * Read mobile phone by Serial Number or all mobiles if no ID given
-  * Search mobiles by any attribute with sorting by Brand, then Model, then Cost
-  * Update mobiles (only fields allowed to change: number of cameras, cores, weight, battery, cost)
-  * Delete mobile by Serial Number
-
-* Proper error handling and validation responses.
+1. A validated REST API for CRUD operations on mobile phones.  
+2. Containerization with **Docker** and **Docker Compose**.  
+3. Secure credentials management using **Google Secret Manager (GSM)**.  
+4. Deployment to **Kubernetes** (via Minikube).  
 
 ---
 
-## Technology Stack
+## ✨ Features
 
-* **Language:** Java 21+
-* **Framework:** Spring Boot 3.5.5, Spring Data REST, Spring Data JPA, Hibernate Validator
-* **Database:** MySQL (Dockerized)
-* **Build Tool:** Maven
-* **Containerization:** Docker, Docker Compose
-* **Orchestration:** Kubernetes (Minikube for local cluster)
-* **Secrets Management:** Google Secret Manager
+### Mobile Phone Entity (all fields validated)
+
+- **Serial Number** → exactly 11 alphanumeric characters, unique  
+- **IMEI Number** → exactly 15 digits, unique  
+- **Model** → alphanumeric, min 2 chars  
+- **Brand** → letters only, min 2 chars  
+- **Network Technology** → one or more of [GSM, HSPA, LTE, 3G, 4G, 5G]  
+- **Number of Cameras** → integer (1–3)  
+- **Number of CPU Cores** → integer ≥ 1  
+- **Weight** → positive integer (grams)  
+- **Battery Capacity** → positive integer (mAh)  
+- **Cost** → positive decimal (€)  
+
+### REST Endpoints
+
+- **Create** → add a new phone (validates Serial Number & IMEI uniqueness)  
+- **Read** → get phone by Serial Number, or list all  
+- **Search** → query by any field, sorted by Brand → Model → Cost  
+- **Update** → modify limited fields (cameras, cores, weight, battery, cost)  
+- **Delete** → remove by Serial Number  
+
+✅ Includes robust **error handling** with proper HTTP status codes and JSON responses.
 
 ---
 
-## How to Run Locally
+## 🛠️ Technology Stack
+
+- **Language:** Java 21+  
+- **Framework:** Spring Boot 3.5.5, Spring Data REST, JPA/Hibernate Validator  
+- **Database:** MySQL (Dockerized)  
+- **Build Tool:** Maven  
+- **Containerization:** Docker, Docker Compose  
+- **Orchestration:** Kubernetes (Minikube)  
+- **Secrets Management:** Google Secret Manager (GSM)  
+
+---
+
+## 🚀 Running Locally
 
 ### Prerequisites
 
-* Java 21+ installed
-* Maven installed
-* Docker and Docker Compose installed
-* Minikube installed (for Kubernetes deployment)
-* GCP Service Account JSON for Secret Manager (placed under `./secrets/`)
+- Java 21+  
+- Maven  
+- Docker & Docker Compose  
+- Minikube (for Kubernetes)  
+- GCP Service Account JSON (`./secrets/service_account.json`)  
 
-### Environment File
+### Environment
 
-* Create a `.env` file in the project root (copy from `.env.example`)
-
-> `.env` is **never committed** to GitHub. Only `.env.example` is shared as a template.
-
----
-
-### Running MySQL Only (Development Mode)
-
-Sometimes you only want **MySQL running** to test backend from an IDE or editor:
-
-```bash
-# Initialize MySQL container using Google Secret Manager
-./database/setup-mysql.sh
-```
-* Load environment variables
-* Creates MySQL container with a persistent volume
-* Fetches DB credentials from GSM
-* Initializes database and app user
-* Waits for MySQL to be ready
-
-> If the volume exists, it **reuses existing data**. Otherwise it creates the volume
+- Copy `.env.example` → `.env` and update values.  
+- `.env` is **ignored by Git** (never committed).  
 
 ---
 
-### Running the Full Backend Service
-
-1. **Setup Docker resources**
-
-```bash
-./Docker/setup.sh
-```
-
-* Builds backend Docker image
-* Creates MySQL volume and Docker network
-
-2. **Start MySQL and wait for readiness**
+### 🗄️ Run MySQL Only (for development)
 
 ```bash
 ./database/setup-mysql.sh
 ```
 
-3. **Start backend container**
+- Starts MySQL container with persistent volume  
+- Pulls credentials from GSM  
+- Waits until database is ready  
+
+---
+
+### 🖥️ Run Full Backend (Dockerized)
+
+1. **Build resources**
+
+   ```bash
+   ./Docker/setup.sh
+   ```
+
+2. **Start MySQL**
+
+   ```bash
+   ./database/setup-mysql.sh
+   ```
+
+3. **Run backend**
+
+   ```bash
+   ./Docker/start.sh
+   ```
+
+   → Service available at: `http://localhost:8080`
+
+4. **Stop services**
+
+   ```bash
+   ./Docker/stop.sh
+   ```
+
+5. **Remove everything**
+
+   ```bash
+   FORCE_REMOVE=1 ./Docker/remove.sh
+   ```
+
+---
+
+## 🐳 Docker Compose Setup
+
+Start both backend + DB:
 
 ```bash
-./Docker/start.sh
+docker-compose up --build -d
 ```
 
-* Waits for MySQL readiness
-* Injects environment variables and GSM credentials
-* Runs Spring Boot app on `http://localhost:8080`
+- `--build` → rebuild if Dockerfiles changed  
+- `-d` → run in background  
 
-4. **Stop Containers**
+Logs:
 
 ```bash
-./Docker/stop.sh
+docker-compose logs -f
 ```
 
-5. **Remove Containers / Volumes / Network (optional)**
+Stop services:
 
 ```bash
-FORCE_REMOVE=1 ./Docker/remove.sh
+docker-compose down
+```
+
+Remove everything:
+
+```bash
+docker-compose down -v --rmi all --remove-orphans
 ```
 
 ---
 
-## Docker Compose Setup
+## ☸️ Kubernetes Setup (Minikube)
 
-Use the included `docker-compose.yml` to start the backend and database with one command:
+All manifests are in `yaml/`.
 
-```bash
-docker-compose up --build
-```
-
-* Ensures volume and network are created
-* MySQL waits for readiness before backend starts
-
----
-
-## Kubernetes Setup
-
-All Kubernetes manifests are in `/yaml`:
-
-* Deployment for backend REST service
-* StatefulSet for MySQL with PersistentVolumeClaim
-* Services (ClusterIP / Headless)
-* ConfigMaps / Secrets for DB credentials from GSM
-* Resource limits, restart policies, and readiness probes
-
-Deploy on Minikube:
+### 1. Start cluster
 
 ```bash
-kubectl apply -f yaml/
+minikube start --nodes=2 --driver=docker
 ```
 
-Delete deployment:
+### 2. Label nodes
 
 ```bash
-kubectl delete -f yaml/
+kubectl label node minikube componentType=APP
+kubectl label node minikube-m02 componentType=DB
 ```
 
+### 3. Apply resources
+
+```bash
+kubectl apply -f yaml/pv.yaml
+kubectl apply -f yaml/mysql-claim.yaml
+kubectl apply -f yaml/mysql-secret.yaml
+kubectl apply -f yaml/mysql.yaml
+kubectl apply -f yaml/mysql-service.yaml
+```
+
+### 4. Add Google SA secret
+
+```bash
+kubectl create secret generic google-sa-secret \
+  --from-file=service_account.json=./secrets/service_account.json
+```
+
+### 5. Deploy backend
+
+```bash
+kubectl apply -f yaml/mobilemanagement.yaml
+kubectl apply -f yaml/mobilemanagement-service.yaml
+```
+
+### 6. Expose service
+
+```bash
+minikube tunnel
+```
+
+Check service:
+
+```bash
+kubectl get svc mobilemanagement-service
+```
+
+→ Access via `127.0.0.1:8080`
+
 ---
 
-## Configuration
+## 🔐 Secrets Recap
 
-* Database credentials are fetched **securely from Google Secret Manager**
-* `.env` contains only **non-sensitive defaults** for Docker containers and networking
-* Docker and Kubernetes manifests use environment variables and secrets to inject parameters securely
+- **MySQL credentials** → `mysql-secret.yaml`  
+- **Google Cloud credentials** → `google-sa-secret`  
 
----
-
-## Notes
-
-* Validation enforced at entity level (Hibernate Validator) and service logic
-* Uniqueness of Serial Number and IMEI guaranteed by database constraints
-* Search endpoint supports filtering by any field with combined criteria
-* Error handling uses standard HTTP response codes and JSON error messages
-* Docker multi-stage build optimizes image size
-* Scripts include health checks to ensure DB readiness before starting backend
-* Security considerations applied in Dockerfile and deployment manifests (non-root user, secrets)
+Both mounted inside containers at `/etc/secrets/`.
 
 ---
 
-## Summary of Developer Workflows
+## ⚡ Developer Workflows
 
-1. **MySQL only**: run `setup-mysql.sh` → use DB for development in any IDE
-2. **Full app**: run `setup.sh` → `setup-mysql.sh` → `start.sh` → backend ready
-3. `.env` + GSM ensures **secure, repeatable, modular configuration**
+- **MySQL only (IDE testing):** `setup-mysql.sh`  
+- **Full app:** `setup.sh` → `setup-mysql.sh` → `start.sh`  
+- **Docker Compose:** `docker-compose up -d`  
+- **Kubernetes:** `kubectl apply -f yaml/`  
 
 ---
 
-*This README provides the complete guide for building, running, and deploying the Mobile Phones Management RESTful service using Spring Boot, Docker, Docker Compose, Kubernetes, and Google Secret Manager.*
+## 📌 Notes
+
+- Entity validation enforced with Hibernate Validator  
+- Unique constraints at DB level  
+- Multi-stage Docker build for optimized images  
+- Health checks ensure DB readiness before backend starts  
+- Non-root Docker/Kubernetes execution for better security  
+
+---
+
+## ✅ Summary
+
+This project delivers a **secure, production-ready backend** for managing mobile phones, with:  
+
+- Modular **Spring Boot + REST API**  
+- Secure **secrets handling (GSM + K8s)**  
+- Portable **Docker / Compose setup**  
+- Scalable **Kubernetes deployment (Minikube)**  
 
 ---
