@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mobilemanagement
+  labels:
+    app: mobilemanagement
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: mobilemanagement
+  template:
+    metadata:
+      labels:
+        app: mobilemanagement
+    spec:
+      nodeSelector:
+        componentType: APP
+      containers:
+        - name: mobilemanagement
+          image: dtheodosis/mobile_management:0.1
+          ports:
+            - containerPort: 30000
+          env:
+            - name: PROFILE
+              value: "dev"
+            - name: SERVER_PORT
+              value: "30000"
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: /etc/secrets/service_account.json
+          volumeMounts:
+            - name: google-sa-vol
+              mountPath: /etc/secrets
+              readOnly: true
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "500m"
+            limits:
+              memory: "1024Mi"
+              cpu: "2000m"
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 30000
+            initialDelaySeconds: 45
+            periodSeconds: 15
+            timeoutSeconds: 3
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 30000
+            initialDelaySeconds: 30
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+      volumes:
+        - name: google-sa-vol
+          secret:
+            secretName: google-sa-secret
