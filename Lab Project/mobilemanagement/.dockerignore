@@ -4,6 +4,13 @@ target/
 .dockerignore
 .gitattributes
 .gitignore
-Kubernetes/
+.git
 secrets/
+.env.sample
+.env
+HELP.md
+database/
+secret_manager/
+yaml
 *.sh
+!secret_manager/fetch_secrets.sh
