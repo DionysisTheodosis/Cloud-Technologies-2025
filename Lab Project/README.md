@@ -65,7 +65,7 @@ The project includes:
 
 ### Environment
 
-- Copy `.env.example` → `.env` and update values.  
+- Copy `.env.sample` → `.env` and update values.  
 - `.env` is **ignored by Git** (never committed).  
 
 ---
@@ -151,7 +151,27 @@ docker-compose down -v --rmi all --remove-orphans
 
 ## ☸️ Kubernetes Setup (Minikube)
 
-All manifests are in `yaml/`.
+> **Prerequisites for this section:**
+> Before applying the manifests, make sure you have:
+>
+> 1. **Minikube** and **kubectl** installed.
+> 2. The `mysql-secret.yaml` file under `yaml/` containing your MySQL credentials.
+>    Example `mysql-secret.yaml`:
+>
+>    ```yaml
+>    apiVersion: v1
+>    kind: Secret
+>    metadata:
+>      name: mysql-secret
+>    type: kubernetes.io/basic-auth
+>    stringData:
+>      username: <YOUR_DB_USERNAME>
+>      password: <YOUR_DB_PASSWORD>
+>    ```
+>
+>    Replace `<YOUR_DB_USERNAME>` and `<YOUR_DB_PASSWORD>` with the credentials from your `.env` file.  
+
+After this, you can proceed.
 
 ### 1. Start cluster
 
