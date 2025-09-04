@@ -12,18 +12,23 @@ RUN mvn -B dependency:go-offline
 COPY src src
 RUN mvn -B clean package -DskipTests
 
-# Stage 2: Create a minimal distroless to make smaller the attack surface runtime image, and so because its distroless we dont need to make another user we and it come by default with non route user
-FROM gcr.io/distroless/java21-debian12:nonroot AS runtime
+# Stage 2: Create a minimal runtime image
+FROM eclipse-temurin:21-jre-alpine AS runtime
 WORKDIR /app
 
-#Making an arg in case we switch the name soo to can pass new to the jarfile from the command line
+# Argument to allow flexible JAR file names
 ARG JAR_FILE=mobilemanagement-0.0.1-SNAPSHOT.jar
 
-# Copy the JAR file built in the previous stage
-COPY --from=build /app/target/mobilemanagement-0.0.1-SNAPSHOT.jar app.jar
+# Copy the JAR file from the build stage using the ARG
+COPY --from=build /app/target/${JAR_FILE} app.jar
+
+# Set a non-root user for security reasons
+RUN addgroup --system appgroup && adduser --system --ingroup appgroup appuser
+USER appuser
 
 # Expose the port your application listens on
 EXPOSE 8080
 
 # Command to run the application
-CMD ["app.jar"]
+CMD ["java","-jar","app.jar"]
+

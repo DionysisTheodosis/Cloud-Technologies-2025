@@ -1,0 +1,78 @@
+services:
+  mysql:
+    image: mysql:latest
+    container_name: mobile_management_db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: mobilemanagement
+      MYSQL_USER_FILE: /run/secrets/mysql_user
+      MYSQL_PASSWORD_FILE: /run/secrets/mysql_user_password
+      MYSQL_RANDOM_ROOT_PASSWORD: yes
+      MYSQL_ONETIME_PASSWORD: yes
+    secrets:
+      - mysql_user
+      - mysql_user_password
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      mobile_net:
+        aliases:
+          - mysql
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "sh",
+          "-c",
+          'mysql --user=$(<"/run/secrets/mysql_user") --password=$(<"/run/secrets/mysql_user_password")',
+        ]
+      start_period: 30s
+      interval: 10s
+      timeout: 20s
+      retries: 10
+    security_opt:
+      - no-new-privileges:true
+
+  app:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
+    container_name: mobile_management
+    restart: unless-stopped
+    environment:
+      PROFILE: "dev"
+      GOOGLE_APPLICATION_CREDENTIALS: /run/secrets/GOOGLE_APPLICATION_CREDENTIALS
+    depends_on:
+      mysql:
+        condition: service_healthy
+    secrets:
+      - GOOGLE_APPLICATION_CREDENTIALS
+    ports:
+      - "8080:8080"
+    networks:
+      - mobile_net
+    healthcheck:
+      test:
+        ["CMD", "curl", "-f", "http://localhost:8080/actuator/health/liveness"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    mem_limit: 1024m
+    cpus: 2
+    security_opt:
+      - no-new-privileges:true
+
+volumes:
+  mysql_data: {}
+
+networks:
+  mobile_net: {}
+
+secrets:
+  mysql_user:
+    file: ./secrets/mysql_user.txt
+  mysql_user_password:
+    file: ./secrets/mysql_user_password.txt
+  GOOGLE_APPLICATION_CREDENTIALS:
+    file: ./secrets/service_account.json
