@@ -7,7 +7,7 @@ spring:
       secretmanager:
         enabled: true
   datasource:
-    url: jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/${sm@projects/356074917522/secrets/MYSQL_DATABASE/versions/latest}
+    url: jdbc:mysql://${sm@projects/356074917522/secrets/MYSQL_HOST/versions/latest}:${sm@projects/356074917522/secrets/MYSQL_PORT/versions/latest}/${sm@projects/356074917522/secrets/MYSQL_DATABASE/versions/latest}
     username: ${sm@projects/356074917522/secrets/MYSQL_USER/versions/latest}
     password: ${sm@projects/356074917522/secrets/MYSQL_PASSWORD/versions/latest}
     driver-class-name: com.mysql.cj.jdbc.Driver

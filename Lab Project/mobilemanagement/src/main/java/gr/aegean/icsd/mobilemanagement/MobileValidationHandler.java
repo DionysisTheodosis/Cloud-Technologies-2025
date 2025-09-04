@@ -9,7 +9,6 @@ import org.springframework.data.rest.core.annotation.HandleBeforeSave;
 import org.springframework.data.rest.core.annotation.RepositoryEventHandler;
 import org.springframework.stereotype.Component;
 
-import java.util.NoSuchElementException;
 import java.util.Set;
 @Component
 @RepositoryEventHandler
