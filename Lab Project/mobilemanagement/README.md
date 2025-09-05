@@ -73,7 +73,7 @@ The project includes:
 ### 🗄️ Run MySQL Only (for development)
 
 ```bash
-./database/setup-mysql.sh
+   database/./setup-mysql.sh
 ```
 
 - Starts MySQL container with persistent volume  
@@ -87,19 +87,19 @@ The project includes:
 1. **Build resources**
 
    ```bash
-   ./Docker/setup.sh
+   docker/./setup.sh
    ```
 
 2. **Start MySQL**
 
    ```bash
-   ./database/setup-mysql.sh
+   database/./setup-mysql.sh
    ```
 
 3. **Run backend**
 
    ```bash
-   ./Docker/start.sh
+   docker/./start.sh
    ```
 
    → Service available at: `http://localhost:8080`
@@ -107,13 +107,19 @@ The project includes:
 4. **Stop services**
 
    ```bash
-   ./Docker/stop.sh
+   docker/./stop.sh
    ```
 
-5. **Remove everything**
+5. **Remove containers**
 
    ```bash
-   FORCE_REMOVE=1 ./Docker/remove.sh
+   docker/./remove.sh
+   ```
+
+6. **Remove everything**
+
+   ```bash
+   FORCE_REMOVE=1 docker/./remove.sh
    ```
 
 ---
@@ -246,7 +252,7 @@ Both mounted inside containers at `/etc/secrets/`.
 
 ## 📌 Notes
 
-- Entity validation enforced with Hibernate Validator  
+- Entity validation enforced with Jakarta Validator  
 - Unique constraints at DB level  
 - Multi-stage Docker build for optimized images  
 - Health checks ensure DB readiness before backend starts  
