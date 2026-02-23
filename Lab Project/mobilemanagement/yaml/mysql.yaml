@@ -58,7 +58,7 @@ spec:
                 - sh
                 - -c
                 - "mysql -u $(cat /etc/mysql-secrets/username) -p$(cat /etc/mysql-secrets/password) -e 'SELECT 1;'"
-            initialDelaySeconds: 10
+            initialDelaySeconds: 60
             periodSeconds: 5
             timeoutSeconds: 5
       volumes:
